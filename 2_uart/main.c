@@ -1,6 +1,9 @@
 #include "gpio.h"
 #include "uart.h"
 
+#include <stdio.h>
+#include <sys/types.h> // For ssize_t
+
 
 #define GPIO ((NRF_GPIO_REG*)0x50000000)
 
@@ -25,6 +28,15 @@ void clear_leds() {
     }
 }
 
+ssize_t _write(int fd, const void *buf, size_t count){
+    char * letter = (char *)(buf);
+    for(int i = 0; i < count; i++){
+        uart_send(*letter);
+        letter++;
+    }
+    return count;
+}
+
 int main(){
 	// Configure LED Matrix
 	for(int i = 17; i <= 20; i++){
@@ -40,6 +52,8 @@ int main(){
 	int sleep = 0;
 
     uint8_t led_on = 0;
+
+    iprintf("The average grade in TTK%d was in %d was: %c\n\r",4235,2022,'B');
 
 	while(1){
 
@@ -67,7 +81,7 @@ int main(){
                 clear_leds();
             }
 
-            if (!led_on) {
+            else if (!led_on) {
                 led_on = 1;
                 set_leds();
             }
